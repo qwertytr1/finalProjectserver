@@ -32,7 +32,7 @@ router.get('/refresh', authController.refresh);
 //Users//+
 router.get('/getUsers', authController.getAllUsers);
 router.get('/getUsers/:id?',checkAdmin, authController.getUser);
-router.put('/user/:id',checkAdmin, authController.editUser);
+router.put('/user/:id', authController.editUser);
 router.post('/user/block/:id',checkAdmin, authController.toggleBlock);
 router.post('/user/unblock/:id',checkAdmin, authController.toggleUnblock);
 router.delete('/users/:id',checkAdmin, authController.deleteUser);
