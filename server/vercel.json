@@ -1,0 +1,19 @@
+{
+    "version": 2,
+    "functions":{
+      "api/app.js":{
+"memory":1024,
+"maxDuration":60
+      }
+    },
+    "routes": [
+      {
+        "handle":"filesystem"
+      },
+      {
+        "src": "/(.*)",
+        "dest": "api/app.js"
+      }
+    ],
+    "installCommand": "npm install"
+  }
