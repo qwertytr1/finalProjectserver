@@ -30,7 +30,7 @@ router.post('/logout', authController.logout);
 router.get('/refresh', authController.refresh);
 
 //Users//+
-router.get('/getUsers',checkAdmin, authController.getAllUsers);
+router.get('/getUsers', authController.getAllUsers);
 router.get('/getUsers/:id?',checkAdmin, authController.getUser);
 router.put('/user/:id',checkAdmin, authController.editUser);
 router.post('/user/block/:id',checkAdmin, authController.toggleBlock);
