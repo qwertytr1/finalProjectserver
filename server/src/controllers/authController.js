@@ -58,7 +58,7 @@ exports.logout = async (req, res, next) => {
 }
 
 };
-    async refresh(req, res, next) {
+    exports.refresh = async(req, res, next) => {
         try {
             const {refreshToken} = req.cookies;
             const userData = await userService.refresh(refreshToken);
