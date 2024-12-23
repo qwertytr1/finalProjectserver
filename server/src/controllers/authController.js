@@ -58,26 +58,16 @@ exports.logout = async (req, res, next) => {
 }
 
 };
-exports.refresh = async (req, res, next) => {
-    try {
-        const { refreshToken } = req.cookies;
-        const userData = await userService.refresh(refreshToken);
-        res.cookie('refreshToken', userData.refreshToken, {
-            maxAge: 30 * 24 * 60 * 60 * 1000,
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'lax',
-        });
-
-        return res.status(201).json({
-            message: 'User login successfully.',
-            userData,
-        });
-    } catch (e) {
-        next(e)
-}
-
-};
+    async refresh(req, res, next) {
+        try {
+            const {refreshToken} = req.cookies;
+            const userData = await userService.refresh(refreshToken);
+            res.cookie('refreshToken', userData.refreshToken, {maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true})
+            return res.json(userData);
+        } catch (e) {
+            next(e);
+        }
+    }
 exports.getAllUsers = async (req, res, next) => {
     try {
         const users = await userService.getAllUsers();
