@@ -57,13 +57,12 @@ class UserService {
         if (!refreshToken) {
             throw ApiError.UnauthorizedError();
         }
-        const userData = await tokenService.validateRefreshToken(refreshToken);
+        const userData = tokenService.validateRefreshToken(refreshToken);
         const tokenFromDb = await tokenService.findToken(refreshToken);
         if (!userData || !tokenFromDb) {
             throw ApiError.UnauthorizedError();
         }
-        console.log(userData)
-        const user = await User.findOne({ where: { id: userData.id } });
+        const user = await User.findById(userData.id);
         const userDto = new UserDto(user);
         const tokens = tokenService.generateTokens({...userDto});
 
