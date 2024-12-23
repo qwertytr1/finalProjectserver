@@ -65,6 +65,8 @@ exports.refresh = async (req, res, next) => {
         res.cookie('refreshToken', userData.refreshToken, {
             maxAge: 30 * 24 * 60 * 60 * 1000,
             httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'lax',
         });
 
         return res.status(201).json({
