@@ -18,13 +18,9 @@ class TokenService{
             return null;
     }
 }
-async validateRefreshToken(token) {
+ validateRefreshToken(token) {
     try {
         const userData = jwt.verify(token, process.env.JWT_REFRESH_SECRET);
-        const refreshToken = await TokenSchema.findOne({ where: { refresh_token: token } });
-        if (!refreshToken) {
-            throw ApiError.BadRequest("Invalid or blocked refresh token");
-        }
         return userData;
     } catch (e) {
         console.error(e);
