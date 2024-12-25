@@ -62,21 +62,27 @@ exports.logout = async (req, res, next) => {
 }
 
 };
-    exports.refresh = async(req, res, next) => {
-        try {
-            const {refreshToken} = req.cookies;
-            const userData = await userService.refresh(refreshToken);
-            res.cookie('refreshToken', userData.refreshToken, {
-    maxAge: 30 * 24 * 60 * 60 * 1000, // 30 дней
-    httpOnly: true,                  // Защита от доступа из JavaScript
-    secure: process.env.NODE_ENV === 'production', // Только через HTTPS
-    sameSite: 'strict',              // Запрет межсайтовой передачи
-});
-            return res.json(userData);
-        } catch (e) {
-            next(e);
-        }
+exports.refresh = async (req, res, next) => {
+    try {
+        const { refreshToken } = req.cookies;
+        console.log('Получен refreshToken:', refreshToken);
+
+        const userData = await userService.refresh(refreshToken);
+        console.log('Новый refreshToken:', userData.refreshToken);
+
+        res.cookie('refreshToken', userData.refreshToken, {
+            maxAge: 30 * 24 * 60 * 60 * 1000,
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'strict',
+        });
+
+        return res.json(userData);
+    } catch (e) {
+        console.error('Ошибка в /refresh:', e);
+        next(e);
     }
+};
 exports.getAllUsers = async (req, res, next) => {
     try {
         const users = await userService.getAllUsers();
