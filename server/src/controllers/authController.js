@@ -41,10 +41,7 @@ res.cookie('refreshToken', userData.refreshToken, {
     sameSite: 'strict',              // Запрет межсайтовой передачи
 });
 
-        return res.status(201).json({
-            message: 'User login successfully.',
-            userData,
-        });
+        return res.status(201).json(userData);
     } catch (error) {
         next(error)
     }
