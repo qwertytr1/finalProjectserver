@@ -38,7 +38,7 @@ exports.login = async (req, res, next) => {
 res.cookie('refreshToken', userData.refreshToken, {
     maxAge: 30 * 24 * 60 * 60 * 1000, // 30 дней
     httpOnly: true,                  // Защита от доступа из JavaScript
-    secure: process.env.NODE_ENV === 'production', // Только через HTTPS
+   secure: false, // Отключите для localhost
     sameSite: 'strict',              // Запрет межсайтовой передачи
 });
 
@@ -73,7 +73,7 @@ exports.refresh = async (req, res, next) => {
         res.cookie('refreshToken', userData.refreshToken, {
             maxAge: 30 * 24 * 60 * 60 * 1000,
             httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
+   secure: false, // Отключите для localhost
             sameSite: 'strict',
         });
 
