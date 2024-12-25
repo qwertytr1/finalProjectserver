@@ -1,10 +1,9 @@
-const { Template, User, Tag, Question, Answer} = require("../models/index");
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const userService = require("../services/user-service");
 const { validationResult } = require('express-validator');
 const ApiError = require("../exceptions/api-error");
-const TokenSchema = require('../models/token-model.js')
+const tokenService = require('../services/token-service.js')
 exports.register = async (req, res, next) => {
     try {
         const errors = validationResult(req);
@@ -80,6 +79,27 @@ exports.refresh = async (req, res, next) => {
         return res.json(userData);
     } catch (e) {
         console.error('Ошибка в /refresh:', e);
+        next(e);
+    }
+};
+exports.refreshAccessToken = async (req, res, next) => {
+    try {
+        const oldAccessToken = req.headers['authorization']?.split(' ')[1];
+        if (!oldAccessToken) {
+            throw ApiError.UnauthorizedError();
+        }
+
+        // Извлекаем данные из токена, даже если он истёк
+        const userData = tokenService.validateAccessToken(oldAccessToken, { ignoreExpiration: true });
+        if (!userData) {
+            throw ApiError.UnauthorizedError();
+        }
+
+        // Генерация нового токена
+        const newAccessToken = tokenService.generateAccessToken({ id: userData.id, role: userData.role });
+
+        return res.json({ accessToken: newAccessToken });
+    } catch (e) {
         next(e);
     }
 };

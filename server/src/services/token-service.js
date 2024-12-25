@@ -9,6 +9,9 @@ class TokenService{
         accessToken,
         refreshToken
     }
+    }
+    generateAccessToken(payload) {
+    return jwt.sign(payload, process.env.JWT_ACCESS_SECRET, { expiresIn: '2h' }); // 2 часа действия
 }
     validateAccessToken(token) {
         try {
