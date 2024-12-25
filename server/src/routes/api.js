@@ -31,9 +31,9 @@ router.get('/refresh', authController.refresh);
 router.post('/refresh-access', authController.refreshAccessToken);
 
 //Users//+
-router.get('/getUsers', checkAdmin, authController.getAllUsers);
-router.get('/getUsers/:id?',checkAdmin, authController.getUser);
-router.put('/user/:id',checkAdmin, authController.editUser);
+router.get('/getUsers', authController.getAllUsers);
+router.get('/getUsers/:id?', authController.getUser);
+router.put('/user/:id', authController.editUser);
 router.post('/user/block/:id',checkAdmin, authController.toggleBlock);
 router.post('/user/unblock/:id',checkAdmin, authController.toggleUnblock);
 router.delete('/users/:id',checkAdmin, authController.deleteUser);
