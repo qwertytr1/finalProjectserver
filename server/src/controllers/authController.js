@@ -14,10 +14,12 @@ exports.register = async (req, res, next) => {
         console.log(req.body);
         const { username, email, password, language, theme, role, isBlocked } = req.body;
         const userData = await userService.register(username, email, password, language, theme, role, isBlocked);
-        res.cookie('refreshToken', userData.refreshToken, {
-            maxAge: 30 * 24 * 60 * 60 * 1000,
-            httpOnly: true,
-        });
+  res.cookie('refreshToken', userData.refreshToken, {
+    maxAge: 30 * 24 * 60 * 60 * 1000, // 30 дней
+    httpOnly: true,                  // Защита от доступа из JavaScript
+    secure: process.env.NODE_ENV === 'production', // Только через HTTPS
+    sameSite: 'strict',              // Запрет межсайтовой передачи
+});
 
         return res.status(201).json({
             message: 'User registered successfully.',
@@ -33,10 +35,12 @@ exports.login = async (req, res, next) => {
         const { email, password } = req.body;
         console.log(req.body);
         const userData = await userService.login( email, password);
-        res.cookie('refreshToken', userData.refreshToken, {
-            maxAge: 30 * 24 * 60 * 60 * 1000,
-            httpOnly: true,
-        });
+res.cookie('refreshToken', userData.refreshToken, {
+    maxAge: 30 * 24 * 60 * 60 * 1000, // 30 дней
+    httpOnly: true,                  // Защита от доступа из JavaScript
+    secure: process.env.NODE_ENV === 'production', // Только через HTTPS
+    sameSite: 'strict',              // Запрет межсайтовой передачи
+});
 
         return res.status(201).json({
             message: 'User login successfully.',
@@ -62,7 +66,12 @@ exports.logout = async (req, res, next) => {
         try {
             const {refreshToken} = req.cookies;
             const userData = await userService.refresh(refreshToken);
-            res.cookie('refreshToken', userData.refreshToken, {maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true})
+            res.cookie('refreshToken', userData.refreshToken, {
+    maxAge: 30 * 24 * 60 * 60 * 1000, // 30 дней
+    httpOnly: true,                  // Защита от доступа из JavaScript
+    secure: process.env.NODE_ENV === 'production', // Только через HTTPS
+    sameSite: 'strict',              // Запрет межсайтовой передачи
+});
             return res.json(userData);
         } catch (e) {
             next(e);
