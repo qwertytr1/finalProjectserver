@@ -4,30 +4,23 @@ const sequelize = require("../src/config/database");
 const apiRoutes = require("../src/routes/api");
 const bodyParser = require("body-parser");
 const cors = require("cors");
-const cookieParser = require("cookie-parser");
 const errorMiddleware = require('../src/middleware/error-middleware.js');
 const app = express();
 
-// Updated CORS Configuration
 app.use(cors({
-  origin: 'http://localhost:3000', // Frontend URL
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Allowed HTTP methods
-  allowedHeaders: ['Content-Type', 'Authorization'], // Allowed headers
-  credentials: true // Allow cookies
+  origin: 'http://localhost:3000',
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true
 }));
 
-// Middleware
 app.use(bodyParser.json());
-app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 
-// Routes
 app.use("/api", apiRoutes);
 
-// Error Middleware
 app.use(errorMiddleware);
 
-// Sync DB and start server
 sequelize
   .sync({ force: false })
   .then(() => {

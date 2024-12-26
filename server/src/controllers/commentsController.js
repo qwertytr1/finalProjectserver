@@ -1,18 +1,7 @@
 const { Template, User, Tag, Question, Answer } = require("../models/index");
 const CommentsService = require('../services/comments-service');
 const jwt = require('jsonwebtoken');
-const getUserIdFromToken = (req) => {
-    const { refreshToken } = req.cookies; // Получаем токен из куки
-    if (!refreshToken) return null;
 
-    try {
-        const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
-        console.log(decoded);
-      return decoded.id; // Поле userId должно быть в payload токена
-    } catch (err) {
-      return null; // Невалидный токен
-    }
-  };
 exports.getCommentsByTemplates = async (req, res, next) => {
     const {id:templateId}  = req.params;
     try {
@@ -38,8 +27,12 @@ exports.getCommentsByUsers = async (req, res, next) => {
 exports.addComment = async (req, res, next) => {
     const { id: templateId } = req.params;
     const { content } = req.body;
-    const userId = getUserIdFromToken(req);
-
+  const accessToken = req.headers['authorization']?.split(' ')[1];
+  if (!accessToken) {
+      throw ApiError.UnauthorizedError();
+  }
+  const userData = tokenService.validateAccessToken(accessToken);
+  const userId = userData.id;
     if (!content) {
         return res.status(400).json({ error: 'Comment text is required' });
     }

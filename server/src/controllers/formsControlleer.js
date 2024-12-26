@@ -1,18 +1,7 @@
 const FormService = require('../services/forms-service.js');
 const { Template, Form, User} = require("../models/index");
 const jwt = require('jsonwebtoken');
-const getUserIdFromToken = (req) => {
-    const { refreshToken } = req.cookies; // Получаем токен из куки
-    if (!refreshToken) return null;
 
-    try {
-        const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
-        console.log(decoded);
-      return decoded.id;
-    } catch (err) {
-      return null; // Невалидный токен
-    }
-  };
 exports.getAllForms = async (req, res, next) => {
     try {
         const forms = await FormService.getAllForms();
@@ -48,7 +37,12 @@ exports.getFormsById = async (req, res, next) => {
             }
         }
         exports.createForms = async (req, res, next) => {
-            const userId = getUserIdFromToken(req); // Получаем userId из токена
+            const accessToken = req.headers['authorization']?.split(' ')[1];
+  if (!accessToken) {
+      throw ApiError.UnauthorizedError();
+  }
+  const userData = tokenService.validateAccessToken(accessToken);
+  const userId = userData.id;
 
             if (!userId) {
                 return res.status(401).json({ error: 'User is not authorized' }); // Проверка на авторизацию

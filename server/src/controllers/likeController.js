@@ -1,19 +1,7 @@
 const { Like, Template } = require('../models/index.js');
 const jwt = require('jsonwebtoken'); // Для работы с токенами
 
-// Функция для извлечения userId из refreshToken
-const getUserIdFromToken = (req) => {
-  const { refreshToken } = req.cookies; // Получаем токен из куки
-  if (!refreshToken) return null;
 
-  try {
-      const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
-      console.log(decoded);
-    return decoded.id; // Поле userId должно быть в payload токена
-  } catch (err) {
-    return null; // Невалидный токен
-  }
-};
 // Получение количества лайков для шаблона
 exports.getLikes = async (req, res, next) => {
   const { id: templateId } = req.params;
@@ -30,7 +18,12 @@ exports.getLikes = async (req, res, next) => {
 // Добавление лайка к шаблону
 exports.addLike = async (req, res) => {
     const templateId = req.params.id;
-    const userId = getUserIdFromToken(req);
+    const accessToken = req.headers['authorization']?.split(' ')[1];
+    if (!accessToken) {
+        throw ApiError.UnauthorizedError();
+    }
+    const userData = tokenService.validateAccessToken(accessToken);
+    const userId = userData.id;
     if (!userId) {
       return res.status(401).json({ error: 'Пользователь не авторизован' });
     }
@@ -55,7 +48,12 @@ exports.addLike = async (req, res) => {
   // Удаление лайка с шаблона
   exports.removeLike = async (req, res) => {
     const  templateId  = req.params.id;
-    const userId = getUserIdFromToken(req); // Извлекаем userId из токена
+    const accessToken = req.headers['authorization']?.split(' ')[1];
+    if (!accessToken) {
+        throw ApiError.UnauthorizedError();
+    }
+    const userData = tokenService.validateAccessToken(accessToken);
+    const userId = userData.id;
 
     if (!userId) {
       return res.status(401).json({ error: 'Пользователь не авторизован' });

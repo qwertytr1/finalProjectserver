@@ -2,18 +2,6 @@ const {sequelize, Template, User, Tag, Question, TemplatesAccess, Like, Comment,
 const cloudinary = require('../config/cloudinary');
 const jwt = require('jsonwebtoken'); // Для работы с токенами
 // шаблоны
-const getUserIdFromToken = (req) => {
-  const { refreshToken } = req.cookies; // Получаем токен из куки
-  if (!refreshToken) return null;
-
-  try {
-      const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
-      console.log(decoded);
-    return decoded.id; // Поле userId должно быть в payload токена
-  } catch (err) {
-    return null; // Невалидный токен
-  }
-};
 exports.createTemplate = async (req, res) => {
   try {
     const { title, description, category, image_url, is_public, tags } = req.body;
@@ -22,7 +10,12 @@ exports.createTemplate = async (req, res) => {
       return res.status(400).json({ error: "Файл изображения не был загружен" });
     }
 
-    const userId = getUserIdFromToken(req);
+    const accessToken = req.headers['authorization']?.split(' ')[1];
+    if (!accessToken) {
+        throw ApiError.UnauthorizedError();
+    }
+    const userData = tokenService.validateAccessToken(accessToken);
+    const userId = userData.id;
 
     // Загружаем изображение в Cloudinary
     const result = await cloudinary.uploader.upload(req.file.path);

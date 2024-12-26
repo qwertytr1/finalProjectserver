@@ -11,7 +11,8 @@ class TokenService{
     }
     }
     generateAccessToken(payload) {
-    return jwt.sign(payload, process.env.JWT_ACCESS_SECRET, { expiresIn: '2h' }); // 2 часа действия
+          const accessToken = jwt.sign(payload, process.env.JWT_ACCESS_SECRET, { expiresIn: '15m' });
+        return{accessToken}
 }
     validateAccessToken(token) {
         try {
@@ -39,22 +40,6 @@ async saveToken(userId, refreshToken) {
     }
     const token = await TokenSchema.create({ user_id: userId, refresh_token: refreshToken });
     return token;
-}
-async removeToken(refreshToken) {
-    const tokenData = await TokenSchema.destroy({
-        where: {
-            refresh_token: refreshToken
-        }
-    });
-    return tokenData;
-}
-async removeTokenById(userId) {
-    const tokenData = await TokenSchema.destroy({
-        where: {
-            user_id: userId
-        }
-    });
-    return tokenData;
 }
 async findToken(refreshToken) {
     const tokenData = await TokenSchema.findOne({
